@@ -43,6 +43,7 @@ export interface ChallengeEntry {
   votesCount: number;
   createdAt: any;
   hasVoted?: boolean;
+  status?: 'pending' | 'approved' | 'rejected';
 }
 
 export async function createChallenge(data: Partial<Challenge>) {
@@ -136,7 +137,17 @@ export async function submitChallengeEntry(challengeId: string, content: string,
     content,
     mediaUrl,
     votesCount: 0,
+    status: 'pending',
     createdAt: serverTimestamp()
+  });
+}
+
+export async function approveEntry(challengeId: string, entryId: string, status: 'approved' | 'rejected') {
+  if (!auth.currentUser) throw new Error('Must be logged in');
+  
+  const entryRef = doc(db, 'challenges', challengeId, 'entries', entryId);
+  await updateDoc(entryRef, {
+    status
   });
 }
 

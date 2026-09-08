@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, TrendingUp, Clock, Flame, Bell } from 'lucide-react';
+import { Sparkles, TrendingUp, Clock, Flame, Bell, MessageCircle } from 'lucide-react';
 import { useNavigation } from '@/store/navigation';
 import { useAuth } from '@/store/auth';
 import { useFeed } from '@/services/useFeed';
@@ -60,16 +60,10 @@ export default function Home() {
             <Sparkles className="w-5 h-5" />
           </button>
           <button 
-            onClick={() => push('about')}
-            className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-purple-600 p-[2px] overflow-hidden hover:scale-105 transition-transform"
+            onClick={() => push('chatList')}
+            className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-blue-400 hover:bg-white/20 transition-colors"
           >
-            <div className="w-full h-full bg-[#0a0a0a] rounded-full flex items-center justify-center">
-              <img 
-                src="https://i.ibb.co/chDNHsvK/1788680057122.png" 
-                alt="Creator" 
-                className="w-full h-full object-cover rounded-full"
-              />
-            </div>
+            <MessageCircle className="w-5 h-5" />
           </button>
         </div>
       </header>

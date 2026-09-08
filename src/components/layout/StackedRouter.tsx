@@ -9,6 +9,10 @@ import Notifications from '@/features/notifications/Notifications';
 import Profile from '@/features/profile/Profile';
 import About from '@/features/profile/About';
 import AdminPanel from '@/features/admin/AdminPanel';
+import Settings from '@/features/profile/Settings';
+import ChatList from '@/features/chat/ChatList';
+import ChatRoom from '@/features/chat/ChatRoom';
+import UserList from '@/features/profile/UserList';
 import React, { useEffect } from 'react';
 
 // Map screen IDs to components
@@ -22,6 +26,10 @@ const ScreenComponents: Record<ScreenId, React.FC<any>> = {
   profile: Profile,
   about: About,
   admin: AdminPanel,
+  settings: Settings,
+  chatList: ChatList,
+  chatRoom: ChatRoom,
+  userList: UserList
 };
 
 export default function StackedRouter() {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ArrowLeft, Trophy, Star, Users, Upload, CheckCircle } from 'lucide-react';
 import { useNavigation } from '@/store/navigation';
-import { getChallengeEntries, hasJoinedChallenge, joinChallenge, submitChallengeEntry, voteOnEntry, Challenge, ChallengeEntry } from '@/services/challenges';
+import { getChallengeEntries, hasJoinedChallenge, joinChallenge, submitChallengeEntry, voteOnEntry, approveEntry, Challenge, ChallengeEntry } from '@/services/challenges';
 import { useAuth } from '@/store/auth';
 import UserAvatar from '@/components/ui/UserAvatar';
 
@@ -31,6 +31,16 @@ export default function ChallengeDetail({ challenge }: { challenge: Challenge })
     getChallengeEntries(challenge.id)
       .then(setEntries)
       .finally(() => setLoading(false));
+  };
+
+  const handleApprove = async (entryId: string, status: 'approved' | 'rejected') => {
+    try {
+      setEntries(prev => prev.map(e => e.id === entryId ? { ...e, status } : e));
+      await approveEntry(challenge.id, entryId, status);
+    } catch(e) {
+      console.error(e);
+      loadEntries();
+    }
   };
 
   const handleJoin = async () => {
@@ -203,22 +213,53 @@ export default function ChallengeDetail({ challenge }: { challenge: Challenge })
                 <p className="text-white/90 mb-4">{entry.content}</p>
                 
                 <div className="flex items-center justify-between border-t border-white/10 pt-3">
-                  <div className="flex items-center gap-1 text-sm font-semibold text-yellow-400">
-                    <Star className="w-4 h-4" /> {entry.votesCount} votes
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="font-semibold text-yellow-400 flex items-center gap-1">
+                      <Star className="w-4 h-4" /> {entry.votesCount} votes
+                    </span>
+                    {entry.status && (
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                        entry.status === 'approved' ? 'bg-green-500/20 text-green-400' :
+                        entry.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
+                        'bg-yellow-500/20 text-yellow-400'
+                      }`}>
+                        {entry.status}
+                      </span>
+                    )}
                   </div>
-                  {entry.authorId !== user?.uid && (
-                    <button 
-                      onClick={() => !entry.hasVoted && handleVote(entry.id)}
-                      disabled={entry.hasVoted}
-                      className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-colors ${
-                        entry.hasVoted 
-                          ? 'bg-white/10 text-white/50 cursor-not-allowed' 
-                          : 'bg-blue-600 text-white hover:bg-blue-500'
-                      }`}
-                    >
-                      {entry.hasVoted ? 'Voted' : 'Vote'}
-                    </button>
-                  )}
+
+                  <div className="flex items-center gap-2">
+                    {challenge.creatorId === user?.uid && entry.status === 'pending' && (
+                      <div className="flex gap-2 mr-2">
+                        <button 
+                          onClick={() => handleApprove(entry.id, 'approved')}
+                          className="px-3 py-1 bg-green-500/20 text-green-400 hover:bg-green-500/30 rounded-full text-xs font-semibold transition-colors"
+                        >
+                          Approve
+                        </button>
+                        <button 
+                          onClick={() => handleApprove(entry.id, 'rejected')}
+                          className="px-3 py-1 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded-full text-xs font-semibold transition-colors"
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    )}
+                    
+                    {entry.authorId !== user?.uid && entry.status !== 'rejected' && (
+                      <button 
+                        onClick={() => !entry.hasVoted && handleVote(entry.id)}
+                        disabled={entry.hasVoted}
+                        className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+                          entry.hasVoted 
+                            ? 'bg-white/10 text-white/50 cursor-not-allowed' 
+                            : 'bg-blue-600 text-white hover:bg-blue-500'
+                        }`}
+                      >
+                        {entry.hasVoted ? 'Voted' : 'Vote'}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             ))

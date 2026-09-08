@@ -211,9 +211,10 @@ export default function Discover() {
               </div>
               <div className="flex flex-col gap-3">
                 {[
+                  { tag: 'Reality', count: '3.4k' },
+                  { tag: 'Challenges', count: '2.1k' },
                   { tag: 'LugaBoyzDesign', count: '1.2k' },
                   { tag: 'Mwanalugali', count: '856' },
-                  { tag: 'Phase4', count: '432' },
                 ].map((topic, i) => (
                   <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors cursor-pointer">
                     <div className="flex items-center gap-3">

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Settings, Award, Grid, Image, Flame, LogOut, Edit2, Bookmark, ArrowLeft, UserPlus, UserCheck, Calendar, Zap, Trophy, Shield, Circle, PieChart, Activity, ThumbsUp, Database } from 'lucide-react';
+import { Settings, Award, Grid, Image, Flame, LogOut, Edit2, Bookmark, ArrowLeft, UserPlus, UserCheck, Calendar, Zap, Trophy, Shield, Circle, PieChart, Activity, ThumbsUp, Database, MessageCircle } from 'lucide-react';
 import { useNavigation } from '@/store/navigation';
 import { useAuth } from '@/store/auth';
 import { logoutUser } from '@/services/auth';
@@ -125,7 +125,7 @@ export default function Profile({ userId }: { userId?: string }) {
           
           {isOwnProfile && (
             <button 
-              onClick={() => push('about')}
+              onClick={() => push('settings')}
               className="absolute top-12 right-4 w-10 h-10 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/50 transition-colors z-10"
             >
             <Settings className="w-5 h-5" />
@@ -167,24 +167,32 @@ export default function Profile({ userId }: { userId?: string }) {
                 Edit Profile
               </button>
             ) : (
-              canFollow && (
+              <div className="flex items-center gap-2 mb-2">
+                {canFollow && (
+                  <button 
+                    onClick={toggleFollow}
+                    className={`px-6 py-2 flex items-center gap-2 rounded-full font-semibold transition-colors text-sm shadow-lg ${
+                      isFollowing ? 'bg-white/10 text-white hover:bg-white/20 border border-white/10' : 'bg-blue-600 text-white hover:bg-blue-500 shadow-blue-500/25'
+                    }`}
+                  >
+                    {isFollowing ? (
+                      <>
+                        <UserCheck className="w-4 h-4" /> Following
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className="w-4 h-4" /> Follow
+                      </>
+                    )}
+                  </button>
+                )}
                 <button 
-                  onClick={toggleFollow}
-                  className={`mb-2 px-6 py-2 flex items-center gap-2 rounded-full font-semibold transition-colors text-sm shadow-lg ${
-                    isFollowing ? 'bg-white/10 text-white hover:bg-white/20 border border-white/10' : 'bg-blue-600 text-white hover:bg-blue-500 shadow-blue-500/25'
-                  }`}
+                  onClick={() => push('chatRoom', { targetUser: profile })}
+                  className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors"
                 >
-                  {isFollowing ? (
-                    <>
-                      <UserCheck className="w-4 h-4" /> Following
-                    </>
-                  ) : (
-                    <>
-                      <UserPlus className="w-4 h-4" /> Follow
-                    </>
-                  )}
+                  <MessageCircle className="w-4 h-4" />
                 </button>
-              )
+              </div>
             )}
             
             {/* Rank badge top right */}
@@ -218,18 +226,24 @@ export default function Profile({ userId }: { userId?: string }) {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-3 gap-3 mb-8">
-          <div className="glass-card !p-3 text-center rounded-2xl bg-white/5 hover:bg-white/10 transition-colors">
+          <button 
+            onClick={() => push('userList', { type: 'followers', userId: profile.uid })}
+            className="glass-card !p-3 text-center rounded-2xl bg-white/5 hover:bg-white/10 transition-colors w-full"
+          >
             <span className="block text-xl font-bold text-white mb-1">{profile.followersCount || 0}</span>
             <span className="text-[10px] text-white/50 uppercase tracking-widest font-semibold flex items-center justify-center gap-1">
               Followers
             </span>
-          </div>
-          <div className="glass-card !p-3 text-center rounded-2xl bg-white/5 hover:bg-white/10 transition-colors">
+          </button>
+          <button 
+            onClick={() => push('userList', { type: 'following', userId: profile.uid })}
+            className="glass-card !p-3 text-center rounded-2xl bg-white/5 hover:bg-white/10 transition-colors w-full"
+          >
             <span className="block text-xl font-bold text-white mb-1">{profile.followingCount || 0}</span>
             <span className="text-[10px] text-white/50 uppercase tracking-widest font-semibold flex items-center justify-center gap-1">
               Following
             </span>
-          </div>
+          </button>
           <div className="glass-card !p-3 text-center rounded-2xl bg-white/5 hover:bg-white/10 transition-colors">
             <span className="block text-xl font-bold text-yellow-400 mb-1">{profile.points || 0}</span>
             <span className="text-[10px] text-yellow-400/70 uppercase tracking-widest font-semibold flex items-center justify-center gap-1">

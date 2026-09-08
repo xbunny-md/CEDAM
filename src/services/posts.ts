@@ -192,8 +192,6 @@ export async function addComment(postId: string, content: string) {
   const postRef = doc(db, 'posts', postId);
 
   let postAuthorId = '';
-  // We do not strictly need a transaction for adding if we use increment,
-  // but transaction is safer. Let's use transaction for exact count.
   await runTransaction(db, async (transaction) => {
     const postDoc = await transaction.get(postRef);
     if (!postDoc.exists()) throw new Error('Post does not exist');
@@ -217,6 +215,31 @@ export async function addComment(postId: string, content: string) {
   if (content) {
     processMentions(content, { postId });
   }
+}
+
+export async function editComment(postId: string, commentId: string, content: string) {
+  if (!auth.currentUser) throw new Error('Must be logged in');
+  
+  const commentRef = doc(db, 'posts', postId, 'comments', commentId);
+  await updateDoc(commentRef, {
+    content,
+    isEdited: true
+  });
+}
+
+export async function deleteComment(postId: string, commentId: string) {
+  if (!auth.currentUser) throw new Error('Must be logged in');
+  
+  const commentRef = doc(db, 'posts', postId, 'comments', commentId);
+  const postRef = doc(db, 'posts', postId);
+
+  await runTransaction(db, async (transaction) => {
+    const postDoc = await transaction.get(postRef);
+    if (postDoc.exists()) {
+      transaction.update(postRef, { commentsCount: Math.max(0, (postDoc.data().commentsCount || 0) - 1) });
+    }
+    transaction.delete(commentRef);
+  });
 }
 
 export async function toggleSavePost(postId: string, isSaved: boolean) {

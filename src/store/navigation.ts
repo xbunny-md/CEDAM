@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type ScreenId = 'home' | 'discover' | 'challenges' | 'challengeDetail' | 'leaderboard' | 'notifications' | 'profile' | 'about' | 'admin';
+export type ScreenId = 'home' | 'discover' | 'challenges' | 'challengeDetail' | 'leaderboard' | 'notifications' | 'profile' | 'about' | 'admin' | 'settings' | 'chatList' | 'chatRoom' | 'userList';
 
 export interface Screen {
   id: ScreenId;

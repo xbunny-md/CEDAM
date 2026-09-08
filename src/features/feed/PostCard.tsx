@@ -91,15 +91,16 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
 
   const handleShare = async () => {
     try {
-      if (navigator.share) {
+      const shareUrl = `${window.location.origin}/?post=${post.id}`;
+      if (navigator.share && /mobile|android|iphone/i.test(navigator.userAgent)) {
         await navigator.share({
           title: `Post by @${post.authorProfile?.username || 'user'}`,
-          text: post.content,
-          url: window.location.href, // Or specific post URL
+          text: post.content || 'Check out this post on LUGA BOYZ',
+          url: shareUrl,
         });
       } else {
-        await navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
-        alert("Link copied to clipboard!");
+        await navigator.clipboard.writeText(shareUrl);
+        alert("Link copied to clipboard! You can share this link to direct others to this post.");
       }
     } catch (err) {
       console.log('Share failed', err);

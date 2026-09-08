@@ -21,6 +21,17 @@ export default function CreatePostSheet({ isOpen, onClose }: { isOpen: boolean, 
   const [error, setError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const realityTopics = ["#Reality", "#Challenges", "#DailyGrind", "#Motivation", "#Creativity"];
+
+  const appendTopic = (topic: string) => {
+    setContent(prev => {
+      const trimmed = prev.trimEnd();
+      if (!trimmed) return topic + " ";
+      if (trimmed.endsWith(topic)) return prev;
+      return trimmed + " " + topic + " ";
+    });
+  };
+
   const resetForm = () => {
     setContent('');
     setMediaFile(null);
@@ -258,10 +269,25 @@ export default function CreatePostSheet({ isOpen, onClose }: { isOpen: boolean, 
             </div>
 
             {/* Toolbar */}
-            <div className="p-4 border-t border-white/10 flex items-center gap-2 pb-8 safe-pb">
-              <button 
-                onClick={() => {
-                   if (fileInputRef.current) {
+            <div className="flex flex-col border-t border-white/10 shrink-0 pb-8 safe-pb">
+              {/* Reality Topics */}
+              <div className="flex items-center gap-2 px-4 py-3 overflow-x-auto no-scrollbar border-b border-white/5">
+                <span className="text-xs font-semibold text-white/50 uppercase tracking-widest shrink-0">Tags:</span>
+                {realityTopics.map(topic => (
+                  <button 
+                    key={topic}
+                    onClick={() => appendTopic(topic)}
+                    className="px-3 py-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs font-medium text-white/80 whitespace-nowrap transition-colors"
+                  >
+                    {topic}
+                  </button>
+                ))}
+              </div>
+              
+              <div className="p-4 flex items-center gap-2">
+                <button 
+                  onClick={() => {
+                     if (fileInputRef.current) {
                      fileInputRef.current.accept = "image/jpeg, image/png, image/webp";
                      fileInputRef.current.click();
                    }
@@ -312,6 +338,7 @@ export default function CreatePostSheet({ isOpen, onClose }: { isOpen: boolean, 
               <div className="ml-auto text-xs font-medium text-white/40">
                 {content.length}/500
               </div>
+             </div>
             </div>
           </motion.div>
         </>
