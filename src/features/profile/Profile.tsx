@@ -15,6 +15,8 @@ import UserAvatar from '@/components/ui/UserAvatar';
 import { BADGES } from '@/services/points';
 import { Medal } from 'lucide-react';
 
+import { createNotification } from '@/services/notifications';
+
 // Rank computation helper
 const getRankInfo = (points: number) => {
   if (points < 100) return { name: 'Novice', color: 'text-gray-400', bg: 'bg-gray-400', max: 100, icon: Circle };
@@ -52,6 +54,10 @@ export default function Profile({ userId }: { userId?: string }) {
         .then(docSnap => {
           if (docSnap.exists()) {
             setProfile(docSnap.data() as UserProfile);
+            // Trigger profile view notification
+            if (currentUser && userId && userId !== currentUser.uid) {
+              createNotification(userId, { type: 'profile_view', actorId: currentUser.uid }).catch(() => {});
+            }
           }
           setLoading(false);
         })
@@ -200,6 +206,11 @@ export default function Profile({ userId }: { userId?: string }) {
               <rankInfo.icon className="w-3 h-3" />
               {rankInfo.name}
             </div>
+            {profile.stream && (
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 text-xs font-bold uppercase tracking-widest">
+                {profile.stream}
+              </div>
+            )}
           </div>
         </div>
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useSpring, useTransform } from 'motion/react';
 import { Trophy, Star, PenTool, Crown, Activity, Heart, Medal, ArrowUp } from 'lucide-react';
-import { getLeaderboard, BADGES } from '@/services/points';
+import { getLeaderboard, getStreamLeaderboard, BADGES } from '@/services/points';
 import { useNavigation } from '@/store/navigation';
 import UserAvatar from '@/components/ui/UserAvatar';
 
@@ -17,9 +17,10 @@ function AnimatedCounter({ value }: { value: number }) {
   return <motion.span>{display}</motion.span>;
 }
 
-type BoardType = 'points' | 'postsCount' | 'likesReceived' | 'challengesJoined' | 'challengeVotesReceived';
+type BoardType = 'points' | 'postsCount' | 'likesReceived' | 'challengesJoined' | 'challengeVotesReceived' | 'streams';
 
 const BOARDS: { id: BoardType; label: string; icon: React.FC<any>; color: string; desc: string }[] = [
+  { id: 'streams', label: 'Faction Wars', icon: Crown, color: 'text-indigo-400', desc: 'Top Streams / Classes by overall points' },
   { id: 'points', label: 'Rising Star', icon: Star, color: 'text-yellow-400', desc: 'Overall most points earned' },
   { id: 'postsCount', label: 'Top Creator', icon: PenTool, color: 'text-purple-400', desc: 'Most posts created' },
   { id: 'likesReceived', label: 'Most Liked', icon: Heart, color: 'text-pink-400', desc: 'Most likes received' },
@@ -29,18 +30,28 @@ const BOARDS: { id: BoardType; label: string; icon: React.FC<any>; color: string
 
 export default function Leaderboard() {
   const { push } = useNavigation();
-  const [activeBoard, setActiveBoard] = useState<BoardType>('points');
+  const [activeBoard, setActiveBoard] = useState<BoardType>('streams');
   const [users, setUsers] = useState<any[]>([]);
+  const [streams, setStreams] = useState<{stream: string, points: number, members: number}[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
-    getLeaderboard(activeBoard)
-      .then(data => {
-        setUsers(data);
-        setLoading(false);
-      })
-      .catch(console.error);
+    if (activeBoard === 'streams') {
+      getStreamLeaderboard()
+        .then(data => {
+          setStreams(data);
+          setLoading(false);
+        })
+        .catch(console.error);
+    } else {
+      getLeaderboard(activeBoard as any)
+        .then(data => {
+          setUsers(data);
+          setLoading(false);
+        })
+        .catch(console.error);
+    }
   }, [activeBoard]);
 
   return (
@@ -84,6 +95,58 @@ export default function Leaderboard() {
       <div className="flex flex-col gap-3">
         {loading ? (
           <div className="text-center py-12 text-white/50">Loading rankings...</div>
+        ) : activeBoard === 'streams' ? (
+          streams.length === 0 ? (
+            <div className="text-center py-12 text-white/50 glass-card">
+              No factions data yet.
+            </div>
+          ) : (
+            <AnimatePresence mode="popLayout">
+              {streams.map((s, index) => (
+                <motion.div
+                  key={s.stream}
+                  layout
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                  className="glass-card p-4 flex items-center gap-4 relative overflow-hidden"
+                >
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm z-10 shrink-0 ${
+                    index === 0 ? 'bg-indigo-400 text-black' :
+                    index === 1 ? 'bg-gray-300 text-black' :
+                    index === 2 ? 'bg-orange-400 text-black' :
+                    'bg-white/10 text-white'
+                  }`}>
+                    #{index + 1}
+                  </div>
+                  
+                  <div className="flex-1 z-10">
+                    <h3 className="font-bold text-white text-lg">{s.stream}</h3>
+                    <p className="text-sm text-white/50">{s.members} members</p>
+                  </div>
+                  
+                  <div className="text-right z-10 flex flex-col items-end">
+                    <motion.div 
+                      initial={{ scale: 0.5 }}
+                      animate={{ scale: 1 }}
+                      className="flex items-center gap-1 font-black text-xl text-white"
+                    >
+                      <Crown className="w-4 h-4 text-indigo-400" />
+                      <AnimatedCounter value={s.points} />
+                    </motion.div>
+                    <span className="text-xs text-white/40 uppercase tracking-wider">
+                      total pts
+                    </span>
+                  </div>
+                  
+                  {index === 0 && <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-transparent" />}
+                  {index === 1 && <div className="absolute inset-0 bg-gradient-to-r from-gray-400/10 to-transparent" />}
+                  {index === 2 && <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-transparent" />}
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          )
         ) : users.length === 0 ? (
           <div className="text-center py-12 text-white/50 glass-card">
             No data yet for this category.

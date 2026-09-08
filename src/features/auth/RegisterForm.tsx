@@ -10,7 +10,8 @@ export default function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
     username: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    stream: ''
   });
   
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -156,6 +157,24 @@ export default function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
               {usernameStatus === 'taken' && <XCircle className="w-5 h-5 text-red-400" />}
             </div>
           </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-white/60 mb-1">Stream / Faction (Optional)</label>
+          <select
+            value={formData.stream}
+            onChange={(e) => setFormData(prev => ({ ...prev, stream: e.target.value }))}
+            className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-blue-500/50 transition-colors appearance-none"
+          >
+            <option value="" className="bg-[#111]">Select Stream...</option>
+            <option value="PCM" className="bg-[#111]">PCM</option>
+            <option value="PCB" className="bg-[#111]">PCB</option>
+            <option value="HKL" className="bg-[#111]">HKL</option>
+            <option value="HGLi" className="bg-[#111]">HGLi</option>
+            <option value="HGL" className="bg-[#111]">HGL</option>
+            <option value="HGE" className="bg-[#111]">HGE</option>
+            <option value="HGV" className="bg-[#111]">HGV</option>
+          </select>
         </div>
 
         <div>

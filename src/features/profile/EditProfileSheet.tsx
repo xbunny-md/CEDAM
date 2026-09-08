@@ -15,6 +15,7 @@ export default function EditProfileSheet({ isOpen, onClose }: { isOpen: boolean,
   const [displayName, setDisplayName] = useState('');
   const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
+  const [stream, setStream] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -26,6 +27,7 @@ export default function EditProfileSheet({ isOpen, onClose }: { isOpen: boolean,
       setDisplayName(profile.displayName);
       setUsername(profile.username);
       setBio(profile.bio || '');
+      setStream(profile.stream || '');
       setImagePreview(profile.avatarUrl);
       setImageFile(null);
       setError('');
@@ -91,6 +93,7 @@ export default function EditProfileSheet({ isOpen, onClose }: { isOpen: boolean,
           transaction.update(userRef, {
             displayName,
             bio,
+            stream,
             username: newUsername,
             avatarUrl: finalAvatarUrl
           });
@@ -102,6 +105,7 @@ export default function EditProfileSheet({ isOpen, onClose }: { isOpen: boolean,
            transaction.update(userRef, {
              displayName,
              bio,
+             stream,
              avatarUrl: finalAvatarUrl
            });
         });
@@ -222,6 +226,24 @@ export default function EditProfileSheet({ isOpen, onClose }: { isOpen: boolean,
                   <div className="text-right text-xs text-white/40 mt-1">
                     {bio.length}/150
                   </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-white/60 mb-2">Stream / Faction (Optional)</label>
+                  <select
+                    value={stream}
+                    onChange={(e) => setStream(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50 transition-colors appearance-none"
+                  >
+                    <option value="" className="bg-[#111]">Select Stream...</option>
+                    <option value="PCM" className="bg-[#111]">PCM</option>
+                    <option value="PCB" className="bg-[#111]">PCB</option>
+                    <option value="HKL" className="bg-[#111]">HKL</option>
+                    <option value="HGLi" className="bg-[#111]">HGLi</option>
+                    <option value="HGL" className="bg-[#111]">HGL</option>
+                    <option value="HGE" className="bg-[#111]">HGE</option>
+                    <option value="HGV" className="bg-[#111]">HGV</option>
+                  </select>
                 </div>
 
                 <div className="pt-6 border-t border-white/10">

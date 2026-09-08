@@ -30,6 +30,7 @@ export interface UserProfile {
   challengeVotesReceived: number;
   points: number;
   badges: string[];
+  stream?: string;
   createdAt: any;
 }
 

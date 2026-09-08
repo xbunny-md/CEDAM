@@ -1,6 +1,27 @@
 import { db } from '@/lib/firebase';
 import { doc, updateDoc, increment, getDoc, collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 
+export async function getStreamLeaderboard(): Promise<{ stream: string, points: number, members: number }[]> {
+  const usersRef = collection(db, 'users');
+  const q = query(usersRef, orderBy('points', 'desc'), limit(100)); // Sample top 100 to aggregate
+  const snap = await getDocs(q);
+  
+  const streamMap: Record<string, { points: number, members: number }> = {};
+  
+  snap.docs.forEach(doc => {
+    const data = doc.data();
+    if (data.stream) {
+      if (!streamMap[data.stream]) streamMap[data.stream] = { points: 0, members: 0 };
+      streamMap[data.stream].points += (data.points || 0);
+      streamMap[data.stream].members += 1;
+    }
+  });
+
+  return Object.entries(streamMap)
+    .map(([stream, data]) => ({ stream, ...data }))
+    .sort((a, b) => b.points - a.points);
+}
+
 export async function getLeaderboard(type: 'points' | 'postsCount' | 'likesReceived' | 'challengesJoined' | 'challengeVotesReceived'): Promise<any[]> {
   const usersRef = collection(db, 'users');
   const q = query(usersRef, orderBy(type, 'desc'), limit(10));

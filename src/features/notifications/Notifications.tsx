@@ -18,6 +18,9 @@ const iconMap = {
   mention: { icon: AtSign, color: 'text-purple-500', bg: 'bg-purple-500/10' },
   poll: { icon: BarChart2, color: 'text-orange-500', bg: 'bg-orange-500/10' },
   challenge_vote: { icon: Target, color: 'text-yellow-500', bg: 'bg-yellow-500/10' },
+  profile_view: { icon: Target, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+  share: { icon: Target, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+  system_update: { icon: Bell, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
 };
 
 const messageMap = {
@@ -27,6 +30,9 @@ const messageMap = {
   mention: 'mentioned you in a post or comment.',
   poll: 'voted in your poll.',
   challenge_vote: 'voted for your challenge entry.',
+  profile_view: 'viewed your profile.',
+  share: 'shared your post.',
+  system_update: 'system update: check it out.',
 };
 
 export default function Notifications() {

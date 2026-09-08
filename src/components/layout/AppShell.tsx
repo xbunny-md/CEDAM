@@ -3,6 +3,7 @@ import BottomNav from './BottomNav';
 import StackedRouter from './StackedRouter';
 import CreateSheet from './CreateSheet';
 import { PWAInstallPopup } from '../ui/PWAInstallPopup';
+import NotificationToast from '../ui/NotificationToast';
 import { useAuth } from '@/store/auth';
 import AuthScreen from '@/features/auth/AuthScreen';
 import { Loader2 } from 'lucide-react';
@@ -28,6 +29,7 @@ export default function AppShell() {
           <BottomNav />
           <CreateSheet />
           <PWAInstallPopup />
+          <NotificationToast />
         </>
       )}
     </div>

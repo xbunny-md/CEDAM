@@ -12,6 +12,7 @@ export interface UserProfile {
   likesCount: number;
   points: number;
   badges: string[];
+  stream?: string;
   createdAt: string;
 }
 

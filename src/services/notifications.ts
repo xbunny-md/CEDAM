@@ -17,7 +17,7 @@ import {
 import { auth } from '@/lib/firebase';
 import { UserProfile } from './users';
 
-export type NotificationType = 'like' | 'comment' | 'follow' | 'mention' | 'poll' | 'challenge_vote';
+export type NotificationType = 'like' | 'comment' | 'follow' | 'mention' | 'poll' | 'challenge_vote' | 'profile_view' | 'share' | 'system_update';
 
 export async function processMentions(text: string, data: { postId?: string, commentId?: string, challengeId?: string }) {
   if (!auth.currentUser) return;
