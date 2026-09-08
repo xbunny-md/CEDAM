@@ -1,0 +1,8 @@
+{
+  "name": "Remix Remix  Luga Boyz Foundation",
+  "description": "A premium, futuristic social architecture and design system for the Mwanalugali Secondary School community hub.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

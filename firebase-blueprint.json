@@ -1,0 +1,106 @@
+{
+  "entities": {
+    "UsernameDoc": {
+      "title": "Username Mapping",
+      "description": "Mapping from username to UID for uniqueness",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" }
+      },
+      "required": ["uid"]
+    },
+    "User": {
+      "title": "User",
+      "description": "A user profile in the LUGA BOYZ application",
+      "type": "object",
+      "properties": {
+        "username": { "type": "string", "maxLength": 30 },
+        "displayName": { "type": "string", "maxLength": 50 },
+        "bio": { "type": "string", "maxLength": 150 },
+        "avatarUrl": { "type": "string" },
+        "followersCount": { "type": "number" },
+        "followingCount": { "type": "number" },
+        "points": { "type": "number" },
+        "badges": {
+          "type": "array",
+          "items": { "type": "string" },
+          "maxLength": 100
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["username", "displayName", "createdAt"]
+    },
+    "Post": {
+      "title": "Post",
+      "description": "A social feed post",
+      "type": "object",
+      "properties": {
+        "authorId": { "type": "string" },
+        "content": { "type": "string", "maxLength": 500 },
+        "mediaUrl": { "type": "string" },
+        "type": { "type": "string", "enum": ["text", "image"] },
+        "likesCount": { "type": "number" },
+        "commentsCount": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["authorId", "createdAt", "type"]
+    },
+    "Like": {
+      "title": "Like",
+      "description": "A user like on a post",
+      "type": "object",
+      "properties": {
+        "postId": { "type": "string" },
+        "userId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["postId", "userId", "createdAt"]
+    },
+    "Comment": {
+      "title": "Comment",
+      "description": "A comment on a post",
+      "type": "object",
+      "properties": {
+        "postId": { "type": "string" },
+        "authorId": { "type": "string" },
+        "content": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["postId", "authorId", "content", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/usernames/{username}": {
+      "schema": { "$ref": "#/entities/UsernameDoc" },
+      "description": "Unique username mappings",
+      "rules": {
+        "read": "request.auth != null",
+        "create": "request.auth != null && request.resource.data.uid == request.auth.uid",
+        "update": "false",
+        "delete": "request.auth != null && resource.data.uid == request.auth.uid"
+      }
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Public user profiles",
+      "rules": {
+        "read": "request.auth != null",
+        "create": "request.auth != null && request.auth.uid == userId",
+        "update": "request.auth != null && request.auth.uid == userId",
+        "delete": "false"
+      }
+    },
+    "/posts/{postId}": {
+      "schema": { "$ref": "#/entities/Post" },
+      "description": "Global post feed"
+    },
+    "/posts/{postId}/likes/{likeId}": {
+      "schema": { "$ref": "#/entities/Like" },
+      "description": "Likes for a specific post"
+    },
+    "/posts/{postId}/comments/{commentId}": {
+      "schema": { "$ref": "#/entities/Comment" },
+      "description": "Comments for a specific post"
+    }
+  }
+}
